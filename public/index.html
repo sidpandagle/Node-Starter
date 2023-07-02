@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Real-Time Chat</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    #chat-container {
+      width: 400px;
+      height: 500px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-y: scroll;
+    }
+
+    #chat-container p {
+      margin: 5px 0;
+    }
+
+    #message-input {
+      width: 100%;
+      padding: 5px;
+      margin-top: 10px;
+    }
+
+    #send-button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <p>Welcome to the chat!</p>
+  </div>
+  <input type="text" id="message-input" placeholder="Type your message">
+  <button id="send-button">Send</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Connect to the socket.io server
+    const socket = io();
+    console.log(socket)
+    // Get DOM elements
+    const chatContainer = document.getElementById('chat-container');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+
+    // Function to display a new message in the chat container
+    function displayMessage(message) {
+      const p = document.createElement('p');
+      p.textContent = message;
+      chatContainer.appendChild(p);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // Event listener for the send button click
+    sendButton.addEventListener('click', () => {
+      const message = messageInput.value;
+      if (message) {
+        // Emit the 'message' event with the entered message
+        socket.emit('message', message);
+        messageInput.value = '';
+      }
+    });
+
+    // Event listener for receiving new messages from the server
+    socket.on('message', message => {
+      displayMessage(message);
+    });
+  </script>
+</body>
+</html>
